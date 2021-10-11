@@ -1,8 +1,11 @@
 package com.gualberto.ronei.rmgschoolapi.domain.category;
 
 import com.gualberto.ronei.rmgschoolapi.domain.common.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.common.MessageCode;
+import com.gualberto.ronei.rmgschoolapi.domain.common.MessageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,14 +13,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryConstants.CATEGORY_NAME_ALREADY_EXISTS;
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryConstants.CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCodeEnum.CATEGORY_NOT_FOUND;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_ID;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME_FOR_UPDATE;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.MSG_CATEGORY_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +34,9 @@ class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private MessageService messageService;
 
     //data
     private CategoryForm categoryForm;
@@ -54,6 +61,7 @@ class CategoryServiceImplTest {
         givenCategoryForm();
         givenCategory();
         //when
+        whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
         whenCallingCategoryRepository_findByName();
 
         //then
@@ -76,6 +84,7 @@ class CategoryServiceImplTest {
     void get_shouldNotReturnCategory_IfIdNotExists() {
         //given
         givenCategory();
+        whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
         //then
         thenThrowGetIfIdExists();
     }
@@ -100,6 +109,7 @@ class CategoryServiceImplTest {
     @Test
     void delete_shouldNotDeleteCategory_IfCategoryNotFound() {
         givenCategory();
+        whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
         thenThrowDeleteIfIdExists();
     }
 
@@ -112,7 +122,6 @@ class CategoryServiceImplTest {
         thenCreateOrUpdateCategory();
     }
 
-
     private void givenCategoryForm(String categoryName) {
         categoryForm = CategoryForm.builder()
                 .name(categoryName)
@@ -124,13 +133,9 @@ class CategoryServiceImplTest {
     }
 
     private void givenCategory() {
-        givenCategory(CATEGORY_ID);
-    }
-
-    private void givenCategory(Long categoryId) {
         categoryTest = Category
                 .builder()
-                .id(categoryId)
+                .id(CATEGORY_ID)
                 .name(CATEGORY_NAME)
                 .build();
     }
@@ -146,6 +151,10 @@ class CategoryServiceImplTest {
 
     private void whenCallingCategoryRepository_findById() {
         when(categoryRepository.findById(CATEGORY_ID)).thenReturn(Optional.ofNullable(categoryTest));
+    }
+
+    private void whenCallingMessageService_toThrowable(MessageCode code, String message) {
+        when(messageService.toThrowable(eq(code), any())).thenReturn(new DomainException(message));
     }
 
     private void whenCalledCreate() {
@@ -174,27 +183,27 @@ class CategoryServiceImplTest {
 
     private void thenCreateOrUpdateCategory() {
         verify(categoryRepository, times(1)).save(any());
-        assertThat(categoryResult.getName()).isEqualTo(categoryForm.getName());
     }
-
 
     private void thenShouldReturnCategory() {
         assertThat(categoryResult).isEqualTo(categoryTest);
     }
 
     private void thenThrowIfNameExists() {
-        DomainException exception = assertThrows(DomainException.class, () -> categoryService.create(categoryForm));
-        assertThat(exception.getMessage()).isEqualTo(CATEGORY_NAME_ALREADY_EXISTS);
+        assertCategoryNotFound(() -> categoryService.create(categoryForm));
+    }
+
+    private void assertCategoryNotFound(Executable executable) {
+        DomainException exception = assertThrows(DomainException.class, executable);
+        assertThat(exception.getMessage()).isEqualTo(MSG_CATEGORY_NOT_FOUND);
     }
 
     private void thenThrowGetIfIdExists() {
-        DomainException exception = assertThrows(DomainException.class, () -> categoryService.get(CATEGORY_ID));
-        assertThat(exception.getMessage()).isEqualTo(CATEGORY_NOT_FOUND);
+        assertCategoryNotFound(() -> categoryService.get(CATEGORY_ID));
     }
 
     private void thenThrowDeleteIfIdExists() {
-        DomainException exception = assertThrows(DomainException.class, () -> categoryService.delete(CATEGORY_ID));
-        assertThat(exception.getMessage()).isEqualTo(CATEGORY_NOT_FOUND);
+        assertCategoryNotFound(() -> categoryService.delete(CATEGORY_ID));
     }
 
     private void thenReturnAllCategories() {

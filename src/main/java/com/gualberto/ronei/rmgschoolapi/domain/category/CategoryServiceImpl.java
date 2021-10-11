@@ -1,6 +1,7 @@
 package com.gualberto.ronei.rmgschoolapi.domain.category;
 
 import com.gualberto.ronei.rmgschoolapi.domain.common.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.common.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -8,14 +9,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryConstants.CATEGORY_NAME_ALREADY_EXISTS;
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryConstants.CATEGORY_NOT_FOUND;
+;
 
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    private MessageService messageService;
 
     @Override
     public Category create(CategoryForm categoryForm) {
@@ -38,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (optCategory.isPresent()) {
             Category categoryFind = optCategory.get();
             if (category == null || !Objects.equals(categoryFind, category)) {
-                throw new DomainException(CATEGORY_NAME_ALREADY_EXISTS);
+                throw messageService.toThrowable(CategoryMessageCodeEnum.CATEGORY_NOT_FOUND, DomainException::new);
             }
         }
     }
@@ -49,8 +51,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category get(Long id) {
+
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new DomainException(CATEGORY_NOT_FOUND));
+                .orElseThrow(() ->
+                        messageService.toThrowable(CategoryMessageCodeEnum.CATEGORY_NOT_FOUND, DomainException::new)
+                );
     }
 
     @Override
