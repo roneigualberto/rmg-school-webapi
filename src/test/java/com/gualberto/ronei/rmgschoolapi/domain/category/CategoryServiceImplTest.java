@@ -68,11 +68,11 @@ class CategoryServiceImplTest {
         givenCategoryForm();
         givenCategory();
         //when
-        whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
+        whenCallingMessageService_toThrowable(CATEGORY_NAME_ALREADY_EXISTS, MSG_CATEGORY_NAME_EXISTS);
         whenCallingCategoryRepository_findByName();
 
         //then
-        thenThrowIfNameExists();
+        thenThrowIfCategoryNameAlreadyExists();
     }
 
     @Test
@@ -259,6 +259,12 @@ class CategoryServiceImplTest {
     private void thenThrowIfSubCategoryNameAlreadyExists() {
         DomainException exception = assertThrows(DomainException.class, () -> categoryService.createSubCategory(CATEGORY_ID, subcategoryForm));
         assertThat(exception.getMessage()).isEqualTo(MSG_SUB_CATEGORY_NAME_EXISTS);
+    }
+
+
+    private void thenThrowIfCategoryNameAlreadyExists() {
+        DomainException exception = assertThrows(DomainException.class, () -> categoryService.create(categoryForm));
+        assertThat(exception.getMessage()).isEqualTo(MSG_CATEGORY_NAME_EXISTS);
     }
 
     private void assertCategoryNotFound(Executable executable) {

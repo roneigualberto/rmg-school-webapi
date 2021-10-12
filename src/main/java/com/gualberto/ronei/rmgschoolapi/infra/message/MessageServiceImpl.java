@@ -4,6 +4,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageCode;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -21,6 +22,6 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessage(MessageCode messageCode, Object... args) {
-        return messageSource.getMessage(messageCode.getCode(), args, Locale.getDefault());
+        return messageSource.getMessage(messageCode.getCode(), args, LocaleContextHolder.getLocale());
     }
 }

@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        messageService.toThrowable(CATEGORY_NOT_FOUND, DomainException::new)
+                        messageService.toThrowable(CATEGORY_NOT_FOUND, (msg) -> new DomainException(CATEGORY_NOT_FOUND, msg))
                 );
     }
 
@@ -161,7 +161,7 @@ public class CategoryServiceImpl implements CategoryService {
         boolean nameAlreadyExists = category == null || !Objects.equals(optCategory.get(), category);
 
         if (nameAlreadyExists) {
-            throw messageService.toThrowable(CATEGORY_NOT_FOUND, DomainException::new);
+            throw messageService.toThrowable(CATEGORY_NAME_ALREADY_EXISTS, (msg) -> new DomainException(CATEGORY_NAME_ALREADY_EXISTS, msg));
         }
     }
 
