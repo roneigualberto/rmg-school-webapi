@@ -16,6 +16,8 @@ public interface CategoryService {
 
     SubCategory createSubCategory(Long categoryId, SubcategoryForm subcategoryForm);
 
+    List<SubCategory> getSubCategories(Long categoryId);
+
 
     SubCategory updateSubCategory(Long categoryId, Long subCategoryId, SubcategoryForm subcategoryForm);
 

@@ -2,25 +2,21 @@ package com.gualberto.ronei.rmgschoolapi.application.rest.controller.category;
 
 
 import com.gualberto.ronei.rmgschoolapi.domain.category.CategoryForm;
+import com.gualberto.ronei.rmgschoolapi.domain.category.SubcategoryForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Data
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class CategoryRequest {
+public class SubCategoryRequest {
 
-    @NotBlank
-    @NotNull
     private String name;
 
-    public CategoryForm toCategoryForm() {
-        return new CategoryForm(name);
+    public SubcategoryForm toSubCategoryForm() {
+        return new SubcategoryForm(name);
     }
 }

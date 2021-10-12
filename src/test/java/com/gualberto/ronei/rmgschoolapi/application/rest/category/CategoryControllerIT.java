@@ -2,10 +2,10 @@ package com.gualberto.ronei.rmgschoolapi.application.rest.category;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gualberto.ronei.rmgschoolapi.application.rest.controller.category.CategoryRequest;
-import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
-import com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode;
-import com.gualberto.ronei.rmgschoolapi.domain.category.CategoryRepository;
+import com.gualberto.ronei.rmgschoolapi.application.rest.controller.category.SubCategoryRequest;
+import com.gualberto.ronei.rmgschoolapi.domain.category.*;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.BaseIntegrationTest;
+import com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NAME_ALREADY_EXISTS;
 import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NOT_FOUND;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,10 +36,15 @@ public class CategoryControllerIT extends BaseIntegrationTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private SubCategoryRepository subCategoryRepository;
+
 
     private Category categoryTest;
 
     private CategoryRequest categoryRequest;
+    private SubCategoryRequest subCategoryRequest;
+    private SubCategory subCategoryTest;
 
 
     @Test
@@ -65,7 +70,8 @@ public class CategoryControllerIT extends BaseIntegrationTest {
                 .content(objectMapper.writeValueAsString(categoryRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.name").value(CATEGORY_NAME));
+                .andExpect(jsonPath("$.name").value(CATEGORY_NAME))
+                .andExpect(jsonPath("$._links").isMap());
     }
 
     @Test
@@ -92,17 +98,125 @@ public class CategoryControllerIT extends BaseIntegrationTest {
         mockMvc.perform(delete(BASE_URI + "/{id}", categoryTest.getId()))
                 .andExpect(status().isNoContent());
 
+
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateCategory_IfNameIsNull() throws Exception {
+
+        givenCategory();
+        givenCategoryRequest(OTHER_CATEGORY_NAME);
+
+        mockMvc.perform(put(BASE_URI + "/{id}", categoryTest.getId()))
+                .andExpect(status().isBadRequest());
+
+
+    }
+
+    @Test
+    @Transactional
+    void shouldUpdateCategory() throws Exception {
+
+        givenCategory();
+        givenCategoryRequest(OTHER_CATEGORY_NAME);
+
+        mockMvc.perform(put(BASE_URI + "/{id}", categoryTest.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(categoryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(categoryTest.getId()))
+                .andExpect(jsonPath("$.name").value(OTHER_CATEGORY_NAME))
+                .andExpect(jsonPath("$._links").isMap());
+    }
+
+    @Test
+    @Transactional
+    void shouldCreateSubcategory() throws Exception {
+
+        givenCategory();
+        givenSubCategoryRequest();
+
+        mockMvc.perform(post(BASE_URI + "/{categoryId}/sub-categories", categoryTest.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(subCategoryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.name").value(subCategoryRequest.getName()))
+                .andExpect(jsonPath("$._links").isMap());
+    }
+
+    @Test
+    @Transactional
+    void shouldDeleteSubcategory() throws Exception {
+
+        givenCategory();
+        givenSubCategory();
+
+        mockMvc.perform(delete(BASE_URI + "/{categoryId}/sub-categories/{subCategoryId}", categoryTest.getId(), subCategoryTest.getId()))
+                .andExpect(status().isNoContent());
+
+    }
+
+    @Test
+    @Transactional
+    void shouldUpdateSubcategory() throws Exception {
+
+        givenCategory();
+        givenSubCategory();
+        givenSubCategoryRequest(OTHER_SUB_CATEGORY_NAME);
+
+        mockMvc.perform(put(BASE_URI + "/{categoryId}/sub-categories/{subCategoryId}", categoryTest.getId(), subCategoryTest.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(subCategoryRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(subCategoryTest.getId()))
+                .andExpect(jsonPath("$.name").value(OTHER_SUB_CATEGORY_NAME))
+                .andExpect(jsonPath("$._links").isMap());
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnSubCategoriesFromCategory() throws Exception {
+
+        givenCategory();
+        givenSubCategory();
+
+        mockMvc.perform(get(BASE_URI + "/{categoryId}/sub-categories", categoryTest.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.sub-categories").isArray());
     }
 
     private void givenCategoryRequest() {
+        givenCategoryRequest(CATEGORY_NAME);
+    }
+
+    private void givenCategoryRequest(String categoryName) {
         categoryRequest = CategoryRequest.builder()
-                .name(CATEGORY_NAME)
+                .name(categoryName)
+                .build();
+    }
+
+    private void givenSubCategoryRequest() {
+        givenSubCategoryRequest(SUB_CATEGORY_NAME);
+    }
+
+    private void givenSubCategoryRequest(String subCategoryName) {
+        subCategoryRequest = SubCategoryRequest.builder()
+                .name(subCategoryName)
                 .build();
     }
 
     private void givenCategory() {
         categoryTest = Category.builder().name(CATEGORY_NAME).build();
         categoryTest = categoryRepository.save(categoryTest);
+    }
+
+    private void givenSubCategory() {
+        subCategoryTest = SubCategory.builder()
+                .category(categoryTest)
+                .name(SUB_CATEGORY_NAME).build();
+        subCategoryTest = subCategoryRepository.saveAndFlush(subCategoryTest);
     }
 
 

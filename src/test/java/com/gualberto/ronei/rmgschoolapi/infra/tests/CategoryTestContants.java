@@ -15,5 +15,6 @@ public final class CategoryTestContants {
 
 
     public static final String SUB_CATEGORY_NAME = "Sub Category Name";
+    public static final String OTHER_SUB_CATEGORY_NAME = "Other Sub Category Name";
 
 }

@@ -91,6 +91,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<SubCategory> getSubCategories(Long categoryId) {
+        return subCategoryRepository.findByCategoryId(categoryId);
+    }
+
+    @Override
     public SubCategory updateSubCategory(Long categoryId, Long subCategoryId, SubcategoryForm subcategoryForm) {
 
         final Category category = get(categoryId);
