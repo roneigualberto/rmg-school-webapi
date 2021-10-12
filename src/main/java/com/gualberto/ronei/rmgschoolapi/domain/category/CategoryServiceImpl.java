@@ -1,7 +1,7 @@
 package com.gualberto.ronei.rmgschoolapi.domain.category;
 
-import com.gualberto.ronei.rmgschoolapi.domain.common.DomainException;
-import com.gualberto.ronei.rmgschoolapi.domain.common.MessageService;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (optCategory.isPresent()) {
             Category categoryFind = optCategory.get();
             if (category == null || !Objects.equals(categoryFind, category)) {
-                throw messageService.toThrowable(CategoryMessageCodeEnum.CATEGORY_NOT_FOUND, DomainException::new);
+                throw messageService.toThrowable(CategoryMessageCode.CATEGORY_NOT_FOUND, DomainException::new);
             }
         }
     }
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryRepository.findById(id)
                 .orElseThrow(() ->
-                        messageService.toThrowable(CategoryMessageCodeEnum.CATEGORY_NOT_FOUND, DomainException::new)
+                        messageService.toThrowable(CategoryMessageCode.CATEGORY_NOT_FOUND, DomainException::new)
                 );
     }
 

@@ -1,8 +1,8 @@
 package com.gualberto.ronei.rmgschoolapi.domain.category;
 
-import com.gualberto.ronei.rmgschoolapi.domain.common.DomainException;
-import com.gualberto.ronei.rmgschoolapi.domain.common.MessageCode;
-import com.gualberto.ronei.rmgschoolapi.domain.common.MessageService;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageCode;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCodeEnum.CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NOT_FOUND;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_ID;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME_FOR_UPDATE;

@@ -1,4 +1,4 @@
-package com.gualberto.ronei.rmgschoolapi.domain.common;
+package com.gualberto.ronei.rmgschoolapi.domain.shared.exception;
 
 public class DomainException extends RuntimeException {
 

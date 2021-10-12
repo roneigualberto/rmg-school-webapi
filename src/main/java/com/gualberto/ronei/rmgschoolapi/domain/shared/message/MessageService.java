@@ -1,12 +1,23 @@
-package com.gualberto.ronei.rmgschoolapi.domain.common;
+package com.gualberto.ronei.rmgschoolapi.domain.shared.message;
 
 import java.util.Locale;
 import java.util.function.Function;
 
 public interface MessageService {
 
+    /**
+     * @param code
+     * @param locale
+     * @param args
+     * @return
+     */
     String getMessage(MessageCode code, Locale locale, Object... args);
 
+    /**
+     * @param code
+     * @param args
+     * @return
+     */
     String getMessage(MessageCode code, Object... args);
 
     default <X extends Throwable> void toThrowable(MessageCode code, Locale locale, Function<String, ? extends X> exceptionMapper, Object... args) throws X {
