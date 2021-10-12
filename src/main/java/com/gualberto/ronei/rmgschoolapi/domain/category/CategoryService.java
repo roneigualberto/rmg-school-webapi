@@ -14,5 +14,10 @@ public interface CategoryService {
 
     void delete(Long id);
 
+    SubCategory createSubCategory(Long categoryId, SubcategoryForm subcategoryForm);
 
+
+    SubCategory updateSubCategory(Long categoryId, Long subCategoryId, SubcategoryForm subcategoryForm);
+
+    void deleteSubCategory(Long categoryId, Long subCategoryId);
 }

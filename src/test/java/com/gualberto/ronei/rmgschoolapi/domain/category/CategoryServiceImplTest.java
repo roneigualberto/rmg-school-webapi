@@ -3,21 +3,20 @@ package com.gualberto.ronei.rmgschoolapi.domain.category;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageCode;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.message.MessageService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NOT_FOUND;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_ID;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME_FOR_UPDATE;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.MSG_CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.*;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,14 +37,21 @@ class CategoryServiceImplTest {
     @Mock
     private MessageService messageService;
 
+    @Mock
+    private SubCategoryRepository subCategoryRepository;
+
     //data
     private CategoryForm categoryForm;
     private Category categoryResult;
     private Category categoryTest;
+    private SubCategory subCategoryTest;
     private List<Category> categoriesExpected;
     private List<Category> categoriesResult;
+    private SubcategoryForm subcategoryForm;
+    private SubCategory subCategoryResult;
 
     @Test
+    @DisplayName("Creating a category with mandatory fields")
     void create_shouldCreateCategory() {
         //given
         givenCategoryForm();
@@ -56,7 +62,8 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void create_shouldNotCreateCategory_IfNameAlreadyExists() {
+    @DisplayName("It is not possible saving category if it is name already exists")
+    void create_ThrowsException_IfCategoryNameAlreadyExists() {
         //given
         givenCategoryForm();
         givenCategory();
@@ -69,6 +76,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
+    @DisplayName("Retrieving category by id")
     void get_shouldReturnCategory() {
         //given
         givenCategory();
@@ -81,7 +89,8 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void get_shouldNotReturnCategory_IfIdNotExists() {
+    @DisplayName("Throws Exception if there is no category with given id")
+    void get_ThrowsException_IfIdNotExists() {
         //given
         givenCategory();
         whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
@@ -90,6 +99,7 @@ class CategoryServiceImplTest {
     }
 
     @Test
+    @DisplayName("Retrieving all categories")
     void findAll_shouldReturnAllCategories() {
         givenCategory();
         givenCategories();
@@ -98,7 +108,8 @@ class CategoryServiceImplTest {
         thenReturnAllCategories();
     }
 
-    @Test
+    @Test()
+    @DisplayName("Deleting Category by id")
     void delete_shouldDeleteCategory() {
         givenCategory();
         whenCallingCategoryRepository_findById();
@@ -106,20 +117,56 @@ class CategoryServiceImplTest {
         thenShouldDeleteCategory();
     }
 
-    @Test
-    void delete_shouldNotDeleteCategory_IfCategoryNotFound() {
+    @Test()
+    @DisplayName("It is not possible delete category if it is not exists")
+    void delete_ThrowsException_IfCategoryNotFound() {
         givenCategory();
         whenCallingMessageService_toThrowable(CATEGORY_NOT_FOUND, MSG_CATEGORY_NOT_FOUND);
         thenThrowDeleteIfIdExists();
     }
 
     @Test
+    @DisplayName("Updating category")
     void update_shouldUpdate() {
         givenCategory();
         givenCategoryForm(CATEGORY_NAME_FOR_UPDATE);
         whenCallingCategoryRepository_findById();
         whenCalledUpdate(CATEGORY_ID);
         thenCreateOrUpdateCategory();
+    }
+
+    @Test
+    @DisplayName("Creating SubCategory")
+    void createSubCategory_shouldCreateSubcategory() {
+        givenCategory();
+        whenCallingCategoryRepository_findById();
+        givenSubcategoryForm();
+        whenCalledCreateSubCategory();
+        thenCreateOrUpdateSubCategory();
+    }
+
+    @Test
+    @DisplayName("Should not Creating Sub Category if name already exists")
+    void createSubCategory_throwsException_IFNameAlreadyExistsInCategory() {
+        givenCategory();
+        givenSubCategory();
+        givenSubcategoryForm();
+
+        whenCallingMessageService_toThrowable(SUB_CATEGORY_NAME_ALREADY_EXISTS, MSG_SUB_CATEGORY_NAME_EXISTS);
+        whenCallingCategoryRepository_findById();
+        whenCallingSubCategoryRepository_findByCategoryAndName();
+
+        thenThrowIfSubCategoryNameAlreadyExists();
+    }
+
+    private void whenCalledCreateSubCategory() {
+        subCategoryResult = categoryService.createSubCategory(CATEGORY_ID, subcategoryForm);
+    }
+
+    private void givenSubcategoryForm() {
+        subcategoryForm = SubcategoryForm.builder()
+                .name(SUB_CATEGORY_NAME)
+                .build();
     }
 
     private void givenCategoryForm(String categoryName) {
@@ -140,6 +187,13 @@ class CategoryServiceImplTest {
                 .build();
     }
 
+    private void givenSubCategory() {
+        subCategoryTest = SubCategory
+                .builder()
+                .name(SUB_CATEGORY_NAME)
+                .build();
+    }
+
     private void givenCategories() {
         categoriesExpected = List.of(categoryTest);
     }
@@ -147,6 +201,10 @@ class CategoryServiceImplTest {
 
     private void whenCallingCategoryRepository_findByName() {
         when(categoryRepository.findByName(CATEGORY_NAME)).thenReturn(Optional.of(categoryTest));
+    }
+
+    private void whenCallingSubCategoryRepository_findByCategoryAndName() {
+        when(subCategoryRepository.findByCategoryAndName(any(), eq(SUB_CATEGORY_NAME))).thenReturn(Optional.ofNullable(subCategoryTest));
     }
 
     private void whenCallingCategoryRepository_findById() {
@@ -185,12 +243,22 @@ class CategoryServiceImplTest {
         verify(categoryRepository, times(1)).save(any());
     }
 
+    private void thenCreateOrUpdateSubCategory() {
+        verify(subCategoryRepository, times(1)).save(any());
+        assertThat(subCategoryResult.getName()).isEqualTo(subcategoryForm.getName());
+    }
+
     private void thenShouldReturnCategory() {
         assertThat(categoryResult).isEqualTo(categoryTest);
     }
 
     private void thenThrowIfNameExists() {
         assertCategoryNotFound(() -> categoryService.create(categoryForm));
+    }
+
+    private void thenThrowIfSubCategoryNameAlreadyExists() {
+        DomainException exception = assertThrows(DomainException.class, () -> categoryService.createSubCategory(CATEGORY_ID, subcategoryForm));
+        assertThat(exception.getMessage()).isEqualTo(MSG_SUB_CATEGORY_NAME_EXISTS);
     }
 
     private void assertCategoryNotFound(Executable executable) {

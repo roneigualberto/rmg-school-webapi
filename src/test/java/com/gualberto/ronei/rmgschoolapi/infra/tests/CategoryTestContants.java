@@ -9,6 +9,10 @@ public final class CategoryTestContants {
 
 
     public static final String MSG_CATEGORY_NAME_EXISTS = "Category Name Already Exists";
+    public static final String MSG_SUB_CATEGORY_NAME_EXISTS = "Sub Category Name Already Exists";
     public static final String MSG_CATEGORY_NOT_FOUND = "Category Not Found";
+
+
+    public static final String SUB_CATEGORY_NAME = "Sub Category Name";
 
 }
