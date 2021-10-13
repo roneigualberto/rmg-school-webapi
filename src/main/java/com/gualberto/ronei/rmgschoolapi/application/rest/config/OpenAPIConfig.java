@@ -1,26 +1,19 @@
 package com.gualberto.ronei.rmgschoolapi.application.rest.config;
 
 
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import org.springframework.context.annotation.Bean;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
+import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants.SCHEME_BEARER_AUTH;
+
 @Configuration
+@OpenAPIDefinition(info = @Info(title = "RMG School API", version = "1.0", description = "RMG School API Application"))
+@SecurityScheme(name = SCHEME_BEARER_AUTH, scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class OpenAPIConfig {
 
 
-    @Bean
-    public OpenAPI openAPI() {
-        return new OpenAPI()
-                .info(new Info().title("RMG School API")
-                        .description("RMG School Application")
-                        .version("v0.0.1")
-                        .license(new License().name("Apache 2.0").url("https://github.com/roneigualberto/rmg-school-webapi/LICENSE.md")))
-                .externalDocs(new ExternalDocumentation()
-                        .description("RMG School Documentation")
-                        .url("https://github.com/roneigualberto/rmg-school-webapi"));
-    }
 }
