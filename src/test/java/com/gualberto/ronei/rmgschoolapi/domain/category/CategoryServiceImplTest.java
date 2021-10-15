@@ -9,14 +9,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.*;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.*;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NAME_ALREADY_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.SUB_CATEGORY_NAME_ALREADY_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_ID;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_NAME_FOR_UPDATE;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.DEFAULT_CATEGORY;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.MSG_CATEGORY_NAME_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.MSG_CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.MSG_SUB_CATEGORY_NAME_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.SUB_CATEGORY_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -180,11 +188,7 @@ class CategoryServiceImplTest {
     }
 
     private void givenCategory() {
-        categoryTest = Category
-                .builder()
-                .id(CATEGORY_ID)
-                .name(CATEGORY_NAME)
-                .build();
+        categoryTest = DEFAULT_CATEGORY;
     }
 
     private void givenSubCategory() {

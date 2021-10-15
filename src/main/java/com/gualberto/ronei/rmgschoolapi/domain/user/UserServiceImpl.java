@@ -50,4 +50,12 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
+
+    @Override
+    public User get(Long userId) {
+        return findById(userId).orElseThrow(() -> {
+            String message = messageService.getMessage(USER_NOT_FOUND);
+            throw new DomainException(USER_NOT_FOUND, message);
+        });
+    }
 }

@@ -9,7 +9,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-;import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.*;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NAME_ALREADY_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.CATEGORY_NOT_FOUND;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.SUB_CATEGORY_NAME_ALREADY_EXISTS;
+import static com.gualberto.ronei.rmgschoolapi.domain.category.CategoryMessageCode.SUB_CATEGORY_NOT_FOUND;
+
+;
 
 @Service
 @AllArgsConstructor
@@ -130,7 +135,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
-    private SubCategory getSubCategory(Long subCategoryId) {
+    @Override
+    public SubCategory getSubCategory(Long subCategoryId) {
         return subCategoryRepository.findById(subCategoryId)
                 .orElseThrow(() ->
                         messageService.toThrowable(SUB_CATEGORY_NOT_FOUND, DomainException::new)
