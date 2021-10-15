@@ -1,6 +1,6 @@
 package com.gualberto.ronei.rmgschoolapi.infra.tests;
 
-public final class CourseTestContants {
+public final class CourseTestConstants {
 
     public static final String COURSE_NAME = "Course Name";
     public static final String COURSE_TITLE = "Course Title";

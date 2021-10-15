@@ -8,6 +8,8 @@ import com.gualberto.ronei.rmgschoolapi.domain.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
@@ -43,5 +45,10 @@ public class CourseServiceImpl implements CourseService {
         return course;
 
 
+    }
+
+    @Override
+    public List<Course> findByInstructor(Long instructorId) {
+        return courseRepository.findByInstructorId(instructorId);
     }
 }

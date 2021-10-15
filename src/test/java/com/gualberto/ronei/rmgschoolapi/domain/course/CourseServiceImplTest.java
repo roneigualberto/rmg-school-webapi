@@ -15,10 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.CATEGORY_ID;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants.SUB_CATEGORY_ID;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestContants.COURSE_ABOUT;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestContants.COURSE_NAME;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestContants.COURSE_PRICE;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestContants.COURSE_TITLE;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_ABOUT;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_NAME;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_PRICE;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_TITLE;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.UserTestConstants.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
