@@ -2,6 +2,7 @@ package com.gualberto.ronei.rmgschoolapi.infra.tests;
 
 import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 
 public final class CategoryTestContants {
 
@@ -26,6 +27,8 @@ public final class CategoryTestContants {
 
     public static final SubCategory DEFAULT_SUB_CATEGORY;
 
+
+
     static {
         DEFAULT_CATEGORY = Category
                 .builder()
@@ -39,6 +42,7 @@ public final class CategoryTestContants {
                 .id(SUB_CATEGORY_ID)
                 .name(SUB_CATEGORY_NAME)
                 .build();
+
     }
 
 }

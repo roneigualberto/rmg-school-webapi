@@ -11,12 +11,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.category.CategoryResponse.ITEM_RELATION;
 import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.category.CategoryResponse.fromCategory;
 import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.category.SubCategoryResponse.fromSubCategory;
+import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.course.SectionResponse.fromSections;
 import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.user.UserResponse.fromUser;
 
 @AllArgsConstructor
@@ -49,6 +51,9 @@ public class CourseResponse {
 
     private Double price;
 
+    @Builder.Default
+    private List<SectionResponse> sections = new ArrayList<>();
+
 
     public static CourseResponse fromCourse(Course course) {
         return CourseResponse.builder()
@@ -59,6 +64,7 @@ public class CourseResponse {
                 .category(fromCategory(course.getCategory()))
                 .subCategory(fromSubCategory(course.getSubCategory()))
                 .instructor(fromUser(course.getInstructor()))
+                .sections(fromSections(course.getSections()))
                 .price(course.getPrice())
                 .build();
     }

@@ -7,10 +7,13 @@ import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategoryRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseRepository;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import com.gualberto.ronei.rmgschoolapi.domain.user.UserRepository;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.BaseIntegrationTest;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants;
+import com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.UserTestConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +49,9 @@ class CourseControllerTest extends BaseIntegrationTest {
     private CourseRepository courseRepository;
 
     @Autowired
+    private SectionRepository sectionRepository;
+
+    @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
@@ -58,6 +64,7 @@ class CourseControllerTest extends BaseIntegrationTest {
     private CourseRequest courseRequestTest;
     private User userTest;
     private Category categoryTest;
+    private Section section1Test;
     private SubCategory subCategoryTest;
     private Course courseTest;
 
@@ -122,6 +129,7 @@ class CourseControllerTest extends BaseIntegrationTest {
         givenCategory();
         givenSubCategory();
         givenCourse();
+        givenSection1();
 
         mockMvc.perform(get(BASE_URI + "/me"))
                 .andExpect(status().isOk())
@@ -137,7 +145,9 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.id").value(userTest.getId()))
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.firstName").value(userTest.getFirstName()))
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.lastName").value(userTest.getLastName()))
-                .andExpect(jsonPath("$._embedded.courses[0].instructor.email").value(userTest.getEmail()));
+                .andExpect(jsonPath("$._embedded.courses[0].instructor.email").value(userTest.getEmail()))
+                .andExpect(jsonPath("$._embedded.courses[0].sections").isArray())
+                .andExpect(jsonPath("$._embedded.courses[0].sections").isNotEmpty());
     }
 
 
@@ -161,6 +171,12 @@ class CourseControllerTest extends BaseIntegrationTest {
     private void givenCategory() {
         categoryTest = CategoryTestContants.DEFAULT_CATEGORY;
         categoryTest = categoryRepository.save(categoryTest);
+    }
+
+    private void givenSection1() {
+        section1Test = CourseTestConstants.SECTION_1;
+        section1Test.setCourse(courseTest);
+        section1Test = sectionRepository.save(section1Test);
     }
 
     private void givenCourse() {
