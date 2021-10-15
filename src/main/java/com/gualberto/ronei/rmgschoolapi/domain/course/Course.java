@@ -2,6 +2,7 @@ package com.gualberto.ronei.rmgschoolapi.domain.course;
 
 import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -62,4 +66,8 @@ public class Course {
 
     @Column(nullable = false)
     private Double price;
+
+    @OneToMany(mappedBy = "course")
+    @Builder.Default
+    private List<Section> sections = new ArrayList<>();
 }

@@ -138,8 +138,6 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.firstName").value(userTest.getFirstName()))
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.lastName").value(userTest.getLastName()))
                 .andExpect(jsonPath("$._embedded.courses[0].instructor.email").value(userTest.getEmail()));
-
-
     }
 
 

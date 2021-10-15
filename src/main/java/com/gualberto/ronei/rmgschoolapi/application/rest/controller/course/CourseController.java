@@ -4,8 +4,6 @@ package com.gualberto.ronei.rmgschoolapi.application.rest.controller.course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseForm;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseService;
-import com.gualberto.ronei.rmgschoolapi.infra.authentication.AuthenticatedUser;
-import com.gualberto.ronei.rmgschoolapi.infra.authentication.AuthenticatedUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -33,19 +31,13 @@ public class CourseController {
 
     private final CourseService courseService;
 
-    private final AuthenticatedUserService authenticatedUserService;
-
     @Transactional
     @PostMapping()
     public ResponseEntity<EntityModel<CourseResponse>> create(@RequestBody CourseRequest request) {
 
-        AuthenticatedUser authenticatedUser = authenticatedUserService.getAuthenticatedUser();
-
-        Long instructorId = authenticatedUser.getId();
-
         CourseForm form = request.toCourseForm();
 
-        Course course = courseService.createCourse(instructorId, form);
+        Course course = courseService.createCourse(form);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -66,11 +58,7 @@ public class CourseController {
     @GetMapping("/me")
     public CollectionModel<?> getMyCourses() {
 
-        AuthenticatedUser authenticatedUser = authenticatedUserService.getAuthenticatedUser();
-
-        Long instructorId = authenticatedUser.getId();
-
-        List<Course> courses = courseService.findByInstructor(instructorId);
+        List<Course> courses = courseService.getMyCourses();
 
         List<CourseResponse> responseList = CourseResponse.fromCourses(courses);
 

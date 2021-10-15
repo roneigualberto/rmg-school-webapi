@@ -1,12 +1,16 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course;
 
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
+
 import java.util.List;
 
 public interface CourseService {
 
 
-    Course createCourse(Long instructorId, CourseForm courseForm);
+    Course createCourse(CourseForm courseForm);
 
-    List<Course> findByInstructor(Long instructorId);
+    List<Course> getMyCourses();
 
+    Section addSection(Long courseId, SectionForm sectionForm);
 }

@@ -35,4 +35,9 @@ public class AutenticatedUserServiceImpl implements AuthenticatedUserService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByEmail(username);
     }
+
+    @Override
+    public User getLoggedUser() {
+        return getAuthenticatedUser().getUser();
+    }
 }
