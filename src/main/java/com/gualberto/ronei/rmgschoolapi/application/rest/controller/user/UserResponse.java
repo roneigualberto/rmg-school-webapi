@@ -1,13 +1,12 @@
 package com.gualberto.ronei.rmgschoolapi.application.rest.controller.user;
 
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
+@Builder
 public class UserResponse {
 
 

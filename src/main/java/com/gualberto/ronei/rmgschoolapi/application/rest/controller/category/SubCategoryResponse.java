@@ -2,9 +2,7 @@ package com.gualberto.ronei.rmgschoolapi.application.rest.controller.category;
 
 import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
@@ -14,8 +12,9 @@ import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.categ
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
 @Relation(itemRelation = ITEM_RELATION, collectionRelation = SubCategoryResponse.COLLECTION_RELATION)
+@Builder
 public class SubCategoryResponse {
 
 

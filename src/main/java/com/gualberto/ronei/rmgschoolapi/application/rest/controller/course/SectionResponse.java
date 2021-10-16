@@ -4,6 +4,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import static com.gualberto.ronei.rmgschoolapi.application.rest.controller.categ
 @NoArgsConstructor
 @Getter
 @Relation(itemRelation = ITEM_RELATION, collectionRelation = SectionResponse.COLLECTION_RELATION)
+@SuperBuilder
 public class SectionResponse {
 
 

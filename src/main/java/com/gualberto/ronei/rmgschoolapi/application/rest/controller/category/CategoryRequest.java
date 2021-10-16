@@ -1,7 +1,6 @@
 package com.gualberto.ronei.rmgschoolapi.application.rest.controller.category;
 
 
-import com.gualberto.ronei.rmgschoolapi.domain.category.CategoryForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,4 @@ public class CategoryRequest {
     @NotNull
     private String name;
 
-    public CategoryForm toCategoryForm() {
-        return new CategoryForm(name);
-    }
 }

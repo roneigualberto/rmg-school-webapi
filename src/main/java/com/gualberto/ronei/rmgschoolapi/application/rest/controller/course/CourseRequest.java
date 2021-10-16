@@ -42,7 +42,5 @@ public class CourseRequest {
     @NotNull
     private Double price;
 
-    public CourseForm toCourseForm() {
-        return new CourseForm(name, title, about, categoryId, subCategoryId, skillLevel, price);
-    }
+
 }

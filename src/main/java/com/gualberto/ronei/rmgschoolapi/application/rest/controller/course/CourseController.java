@@ -39,11 +39,13 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    private final CourseMapper courseMapper;
+
     @Transactional
     @PostMapping()
     public ResponseEntity<EntityModel<CourseResponse>> create(@RequestBody CourseRequest request) {
 
-        CourseForm form = request.toCourseForm();
+        CourseForm form = courseMapper.toCourseForm(request);
 
         Course course = courseService.createCourse(form);
 
@@ -52,7 +54,7 @@ public class CourseController {
                 .buildAndExpand(course.getId())
                 .toUri();
 
-        CourseResponse response = CourseResponse.fromCourse(course);
+        CourseResponse response = courseMapper.fromCourse(course);
 
         Link selfLink = linkTo(methodOn(getClass()).create(null)).withSelfRel();
 
@@ -66,7 +68,7 @@ public class CourseController {
     @PostMapping("{courseId}/sections")
     public ResponseEntity<EntityModel<SectionResponse>> addSection(@PathVariable Long courseId, @RequestBody SectionRequest request) {
 
-        SectionForm form = request.toSectionForm();
+        SectionForm form = courseMapper.toSectionForm(request);
 
         Section section = courseService.addSection(courseId, form);
 
@@ -75,7 +77,7 @@ public class CourseController {
                 .buildAndExpand(section.getId())
                 .toUri();
 
-        SectionResponse response = SectionResponse.fromSection(section);
+        SectionResponse response = courseMapper.fromSection(section);
 
         Link selfLink = linkTo(methodOn(getClass()).addSection(courseId, null)).withSelfRel();
 
@@ -89,7 +91,7 @@ public class CourseController {
     @PostMapping("{courseId}/lectures")
     public ResponseEntity<EntityModel<LectureResponse>> addLecture(@PathVariable Long courseId, @RequestBody LectureRequest request) {
 
-        LectureForm form = request.toLectureForm();
+        LectureForm form = courseMapper.toLectureForm(request);
 
         Lecture lecture = courseService.addLecture(courseId, form);
 
@@ -98,7 +100,7 @@ public class CourseController {
                 .buildAndExpand(lecture.getId())
                 .toUri();
 
-        LectureResponse response = LectureResponse.fromLecture(lecture);
+        LectureResponse response = courseMapper.fromLecture(lecture);
 
         Link selfLink = linkTo(methodOn(getClass()).addLecture(courseId, null)).withSelfRel();
 
@@ -114,7 +116,7 @@ public class CourseController {
 
         List<Course> courses = courseService.getMyCourses();
 
-        List<CourseResponse> responseList = CourseResponse.fromCourses(courses);
+        List<CourseResponse> responseList = courseMapper.fromCourses(courses);
 
         Link selfLink = linkTo(methodOn(getClass()).getMyCourses()).withSelfRel();
         Link createLink = linkTo(methodOn(getClass()).create(null)).withRel("create");

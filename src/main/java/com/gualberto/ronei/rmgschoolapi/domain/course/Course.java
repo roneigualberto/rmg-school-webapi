@@ -4,10 +4,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -69,6 +66,7 @@ public class Course {
 
     @OneToMany(mappedBy = "course")
     @Builder.Default
+    @ToString.Exclude
     private List<Section> sections = new ArrayList<>();
 
 

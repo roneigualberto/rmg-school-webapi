@@ -76,6 +76,10 @@ class CourseControllerTest extends BaseIntegrationTest {
             courseRepository.delete(courseTest);
         }
 
+        if (section1Test != null) {
+            sectionRepository.delete(section1Test);
+        }
+
         if (subCategoryTest != null) {
             subCategoryRepository.delete(subCategoryTest);
         }
@@ -156,7 +160,7 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value(lectureRequest.getTitle()))
-                .andExpect(jsonPath("$.type").value(lectureRequest.getLectureType().name()))
+                .andExpect(jsonPath("$.type").value(lectureRequest.getType().name()))
                 .andExpect(jsonPath("$.order").value(lectureRequest.getOrder()))
                 .andExpect(jsonPath("$.section.id").value(section1Test.getId()))
                 .andExpect(jsonPath("$._links").isMap());
@@ -218,7 +222,7 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .sectionId(section1Test.getId())
                 .title(LECTURE_1_TITLE)
                 .order(LECTURE_1_ORDER)
-                .lectureType(LectureType.VIDEO)
+                .type(LectureType.VIDEO)
                 .build();
     }
 
@@ -235,8 +239,9 @@ class CourseControllerTest extends BaseIntegrationTest {
     private void givenSection1() {
         section1Test = CourseTestConstants.SECTION_1;
         section1Test.setCourse(courseTest);
-        courseTest.addSection(section1Test);
         section1Test = sectionRepository.save(section1Test);
+        courseTest.addSection(section1Test);
+
     }
 
     private void givenCourse() {

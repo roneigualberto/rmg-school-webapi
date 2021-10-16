@@ -26,12 +26,15 @@ public class CategoryController {
     private final CategoryService categoryService;
 
 
+    private final CategoryMapper categoryMapper;
+
+
     @GetMapping
     public CollectionModel<?> all() {
 
         List<Category> categories = categoryService.findAll();
 
-        List<CategoryResponse> responseList = CategoryResponse.fromCategories(categories);
+        List<CategoryResponse> responseList = categoryMapper.fromCategories(categories);
 
         Link selfLink = linkTo(methodOn(getClass()).all()).withSelfRel();
         Link createLink = linkTo(methodOn(getClass()).create(null)).withRel("create");
@@ -44,7 +47,7 @@ public class CategoryController {
     @PostMapping()
     public ResponseEntity<EntityModel<CategoryResponse>> create(@RequestBody CategoryRequest request) {
 
-        CategoryForm form = request.toCategoryForm();
+        CategoryForm form = categoryMapper.toCategoryForm(request);
 
         Category category = categoryService.create(form);
 
@@ -53,14 +56,14 @@ public class CategoryController {
                 .buildAndExpand(category.getId())
                 .toUri();
 
-        CategoryResponse response = CategoryResponse.fromCategory(category);
+        CategoryResponse response = categoryMapper.fromCategory(category);
 
         Link selfLink = linkTo(methodOn(getClass()).create(null)).withSelfRel();
         Link all = linkTo(methodOn(getClass()).all()).withRel("all-categories");
         Link delete = linkTo(methodOn(getClass()).delete(category.getId())).withRel("delete");
         Link update = linkTo(methodOn(getClass()).update(category.getId(), null)).withRel("update");
 
-        EntityModel<CategoryResponse> entityModel = EntityModel.of(response, selfLink, all,update, delete);
+        EntityModel<CategoryResponse> entityModel = EntityModel.of(response, selfLink, all, update, delete);
 
         return ResponseEntity.created(location).body(entityModel);
     }
@@ -78,7 +81,7 @@ public class CategoryController {
     @PutMapping("{id}")
     public ResponseEntity<EntityModel<CategoryResponse>> update(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
 
-        CategoryForm form = request.toCategoryForm();
+        CategoryForm form = categoryMapper.toCategoryForm(request);
 
         Category category = categoryService.update(id, form);
 
@@ -143,7 +146,7 @@ public class CategoryController {
         Link update = linkTo(methodOn(getClass()).update(categoryId, null)).withRel("update-subcategory");
 
 
-        EntityModel<SubCategoryResponse> entityModel = EntityModel.of(response, selfLink, subCategoriesLink, update,delete);
+        EntityModel<SubCategoryResponse> entityModel = EntityModel.of(response, selfLink, subCategoriesLink, update, delete);
 
         return ResponseEntity.ok(entityModel);
     }

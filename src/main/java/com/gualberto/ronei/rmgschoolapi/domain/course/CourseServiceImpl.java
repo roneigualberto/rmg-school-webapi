@@ -72,6 +72,12 @@ public class CourseServiceImpl implements CourseService {
             throw new DomainException("Instructor does not have this course");
         }
 
+        boolean orderAlreadyExists = sectionRepository.existsByCourseAndOrder(course, sectionForm.getOrder());
+
+        if (orderAlreadyExists) {
+            throw new DomainException("Order already exists");
+        }
+
         Section section = course.createSection(sectionForm.getName(), sectionForm.getOrder());
 
         sectionRepository.save(section);
@@ -94,6 +100,12 @@ public class CourseServiceImpl implements CourseService {
 
         if (!course.hasSection(section)) {
             throw new DomainException("Course does not have this section");
+        }
+
+        boolean orderAlreadyExists = lectureRepository.existsBySectionAndOrder(section, lectureForm.getOrder());
+
+        if (orderAlreadyExists) {
+            throw new DomainException("Order already exists");
         }
 
         Lecture lecture = Lecture.builder()

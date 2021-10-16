@@ -24,7 +24,5 @@ public class SectionRequest {
     @NotNull
     private Integer order;
 
-    public SectionForm toSectionForm() {
-        return new SectionForm(name, order);
-    }
+
 }

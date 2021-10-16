@@ -27,13 +27,13 @@ public class LectureRequest {
     private String title;
 
     @NotNull
-    private LectureType lectureType;
+    private LectureType type;
 
     @NotNull
     private Integer order;
 
 
     public LectureForm toLectureForm() {
-        return new LectureForm(sectionId, title, lectureType, order);
+        return new LectureForm(sectionId, title, type, order);
     }
 }
