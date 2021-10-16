@@ -12,7 +12,7 @@ import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "RMG School API", version = "1.0", description = "RMG School API Application"))
-@SecurityScheme(name = SCHEME_BEARER_AUTH, scheme = "basic", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
+@SecurityScheme(name = SCHEME_BEARER_AUTH, scheme = "bearer", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
 public class OpenAPIConfig {
 
 

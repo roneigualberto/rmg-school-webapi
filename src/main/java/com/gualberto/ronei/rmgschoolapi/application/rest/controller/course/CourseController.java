@@ -6,6 +6,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.CourseForm;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseService;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -23,12 +24,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants.SCHEME_BEARER_AUTH;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/v1/courses")
 @AllArgsConstructor
+@SecurityRequirement(name = SCHEME_BEARER_AUTH)
 public class CourseController {
 
 

@@ -100,8 +100,8 @@ class CourseControllerTest extends BaseIntegrationTest {
         givenCourseRequest();
 
         mockMvc.perform(post(BASE_URI)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(courseRequestTest)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(courseRequestTest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").value(courseRequestTest.getName()))
@@ -176,6 +176,7 @@ class CourseControllerTest extends BaseIntegrationTest {
     private void givenSection1() {
         section1Test = CourseTestConstants.SECTION_1;
         section1Test.setCourse(courseTest);
+        courseTest.addSection(section1Test);
         section1Test = sectionRepository.save(section1Test);
     }
 

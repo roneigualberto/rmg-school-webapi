@@ -70,4 +70,27 @@ public class Course {
     @OneToMany(mappedBy = "course")
     @Builder.Default
     private List<Section> sections = new ArrayList<>();
+
+
+    public Section createSection(String name, Integer order) {
+
+        Section section = Section.builder()
+                .course(this)
+                .name(name)
+                .order(order)
+                .build();
+
+        addSection(section);
+
+        return section;
+    }
+
+    public void addSection(Section section) {
+        section.setCourse(this);
+        this.sections.add(section);
+    }
+
+    public boolean hasSection(Section section) {
+        return this.sections.contains(section);
+    }
 }

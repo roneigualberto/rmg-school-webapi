@@ -2,6 +2,8 @@ package com.gualberto.ronei.rmgschoolapi.infra.tests;
 
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.SkillLevelEnum;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureType;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 
 public final class CourseTestConstants {
@@ -21,6 +23,11 @@ public final class CourseTestConstants {
     public static final Integer SECTION_1_ORDER = 1;
     public static final Section SECTION_1;
 
+    public static final Long LECTURE_1_ID = 123L;
+    public static final String LECTURE_1_TITLE = "Lecture 1";
+    public static final Integer LECTURE_1_ORDER = 1;
+    public static final Lecture LECTURE_1;
+
 
     static {
         DEFAULT_COURSE = Course.builder()
@@ -38,6 +45,13 @@ public final class CourseTestConstants {
         SECTION_1 = Section.builder()
                 .name(SECTION_1_NAME)
                 .order(SECTION_1_ORDER)
+                .build();
+
+        LECTURE_1 = Lecture.builder().section(SECTION_1)
+                .id(LECTURE_1_ID)
+                .title(LECTURE_1_TITLE)
+                .order(LECTURE_1_ORDER)
+                .type(LectureType.VIDEO)
                 .build();
     }
 
