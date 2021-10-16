@@ -7,6 +7,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategoryRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseRepository;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureType;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
@@ -25,10 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.gualberto.ronei.rmgschoolapi.domain.course.SkillLevelEnum.BEGINNER;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_ABOUT;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_NAME;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_PRICE;
-import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.COURSE_TITLE;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.*;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.UserTestConstants.USER_EMAIL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,6 +65,8 @@ class CourseControllerTest extends BaseIntegrationTest {
     private Section section1Test;
     private SubCategory subCategoryTest;
     private Course courseTest;
+    private SectionRequest sectionRequest;
+    private LectureRequest lectureRequest;
 
 
     @AfterEach
@@ -119,12 +119,55 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$._links").isMap());
     }
 
+    @Test
+    @Transactional
+    @WithMockUser(username = USER_EMAIL)
+    void shouldAddSection() throws Exception {
+        givenUser();
+        givenCategory();
+        givenSubCategory();
+        givenCourse();
+        givenSectionRequest();
+
+        mockMvc.perform(post(BASE_URI + "/{courseId}/sections", courseTest.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(sectionRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.name").value(sectionRequest.getName()))
+                .andExpect(jsonPath("$.order").value(sectionRequest.getOrder()))
+                .andExpect(jsonPath("$._links").isMap());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = USER_EMAIL)
+    void shouldAddLecture() throws Exception {
+        givenUser();
+        givenCategory();
+        givenSubCategory();
+        givenCourse();
+        givenSection1();
+        givenLectureRequest();
+
+        mockMvc.perform(post(BASE_URI + "/{courseId}/lectures", courseTest.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(lectureRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.title").value(lectureRequest.getTitle()))
+                .andExpect(jsonPath("$.type").value(lectureRequest.getLectureType().name()))
+                .andExpect(jsonPath("$.order").value(lectureRequest.getOrder()))
+                .andExpect(jsonPath("$.section.id").value(section1Test.getId()))
+                .andExpect(jsonPath("$._links").isMap());
+    }
+
 
     @Test
     @Transactional
     @DisplayName("Should return all courses where the logged in user is an instructor")
     @WithMockUser(username = USER_EMAIL)
-    void shouldReturnAllCategories() throws Exception {
+    void shouldReturnMyCourses() throws Exception {
         givenUser();
         givenCategory();
         givenSubCategory();
@@ -163,6 +206,22 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .build();
     }
 
+    private void givenSectionRequest() {
+        sectionRequest = SectionRequest.builder()
+                .name(SECTION_1_NAME)
+                .order(SECTION_1_ORDER)
+                .build();
+    }
+
+    private void givenLectureRequest() {
+        lectureRequest = LectureRequest.builder()
+                .sectionId(section1Test.getId())
+                .title(LECTURE_1_TITLE)
+                .order(LECTURE_1_ORDER)
+                .lectureType(LectureType.VIDEO)
+                .build();
+    }
+
     private void givenUser() {
         userTest = UserTestConstants.DEFAULT_USER;
         userTest = userRepository.save(userTest);
@@ -190,6 +249,7 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .category(categoryTest).subCategory(subCategoryTest).instructor(userTest).build();
         courseTest = courseRepository.save(courseTest);
     }
+
 
     private void givenSubCategory() {
         subCategoryTest = CategoryTestContants.DEFAULT_SUB_CATEGORY;

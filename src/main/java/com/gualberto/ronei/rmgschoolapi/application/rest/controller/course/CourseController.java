@@ -4,6 +4,8 @@ package com.gualberto.ronei.rmgschoolapi.application.rest.controller.course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseForm;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseService;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureForm;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -79,6 +81,29 @@ public class CourseController {
 
 
         EntityModel<SectionResponse> entityModel = EntityModel.of(response, selfLink);
+
+        return ResponseEntity.created(location).body(entityModel);
+    }
+
+    @Transactional
+    @PostMapping("{courseId}/lectures")
+    public ResponseEntity<EntityModel<LectureResponse>> addLecture(@PathVariable Long courseId, @RequestBody LectureRequest request) {
+
+        LectureForm form = request.toLectureForm();
+
+        Lecture lecture = courseService.addLecture(courseId, form);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(lecture.getId())
+                .toUri();
+
+        LectureResponse response = LectureResponse.fromLecture(lecture);
+
+        Link selfLink = linkTo(methodOn(getClass()).addLecture(courseId, null)).withSelfRel();
+
+
+        EntityModel<LectureResponse> entityModel = EntityModel.of(response, selfLink);
 
         return ResponseEntity.created(location).body(entityModel);
     }
