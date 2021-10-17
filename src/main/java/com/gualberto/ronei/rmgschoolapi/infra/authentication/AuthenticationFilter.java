@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants.AUTHORIZATION_HEADER;
-import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants.BEARER_TOKEN;
+import static com.gualberto.ronei.rmgschoolapi.infra.constants.SecurityConstants.*;
 
 @AllArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -41,11 +40,26 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private String getToken(HttpServletRequest request) {
+    private String getTokenFromHeader(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION_HEADER);
         if (token == null || !token.startsWith(BEARER_TOKEN)) {
             return null;
         }
         return token.substring(7);
+    }
+
+    private String getTokenFromParameter(HttpServletRequest request) {
+        return request.getParameter(ACCESS_TOKEN_PARAMETER);
+    }
+
+    private String getToken(HttpServletRequest request) {
+
+        String token = getTokenFromHeader(request);
+
+        if (token == null && request.getMethod().equals("GET")) {
+            token = getTokenFromParameter(request);
+        }
+
+        return token;
     }
 }

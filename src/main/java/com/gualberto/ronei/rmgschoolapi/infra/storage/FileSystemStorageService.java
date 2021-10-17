@@ -3,11 +3,15 @@ package com.gualberto.ronei.rmgschoolapi.infra.storage;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageException;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;

@@ -10,17 +10,24 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -32,12 +39,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/v1/courses")
 @AllArgsConstructor
 @SecurityRequirement(name = SCHEME_BEARER_AUTH)
+@Slf4j
 public class CourseController {
 
 
     private final CourseService courseService;
 
     private final CourseMapper courseMapper;
+
+    private final ResourceLoader resourceLoader;
 
     @Transactional
     @PostMapping()
@@ -89,6 +99,7 @@ public class CourseController {
     @PostMapping("{courseId}/lectures")
     public ResponseEntity<EntityModel<LectureResponse>> addLecture(@PathVariable Long courseId, @RequestBody LectureRequest request) {
 
+
         LectureForm form = courseMapper.toLectureForm(request);
 
         Lecture lecture = courseService.addLecture(courseId, form);
@@ -110,12 +121,10 @@ public class CourseController {
 
 
     @Transactional
-    @PostMapping("{courseId}/lectures/{lectureId}/content")
-    public ResponseEntity<?> storeContent(@PathVariable Long courseId, @PathVariable Long lectureId, @RequestParam("content") MultipartFile content) throws IOException {
+    @PostMapping(value = "{courseId}/lectures/{lectureId}/content", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> storeLectureContent(@PathVariable Long courseId, @PathVariable Long lectureId, @RequestParam("content") MultipartFile content) throws IOException {
 
         courseService.storeLectureContent(courseId, lectureId, content.getInputStream());
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 
         return ResponseEntity.ok().build();
     }
@@ -123,11 +132,18 @@ public class CourseController {
 
     @Transactional(readOnly = true)
     @GetMapping("{courseId}/lectures/{lectureId}/content")
-    public ResponseEntity<?> getContent(@PathVariable Long courseId, @PathVariable Long lectureId) {
+    public ResponseEntity<Mono<Resource>> getLectureContent(@PathVariable Long courseId, @PathVariable Long lectureId, @RequestHeader("Range") String range) {
 
         InputStream content = courseService.getLectureContent(courseId, lectureId);
 
-        return ResponseEntity.ok().body(content);
+        Resource resource = new InputStreamResource(content);
+
+        log.info("Range in bytes {}", range);
+
+        Mono<Resource> body = Mono.fromSupplier(() -> resource);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("video/mp4")).body(body);
+
     }
 
 

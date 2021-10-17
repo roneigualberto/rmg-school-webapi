@@ -6,6 +6,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface CourseService {

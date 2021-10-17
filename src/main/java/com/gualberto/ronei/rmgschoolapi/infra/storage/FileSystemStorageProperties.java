@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class FileSystemStorageProperties {
-    private String location = "target/files/" + UUID.randomUUID();
+    private String location = "target/files";
 
     public Path getLocationPath() {
         return Paths.get(location);

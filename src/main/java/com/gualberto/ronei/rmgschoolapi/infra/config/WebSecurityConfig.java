@@ -58,8 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers("/h2-console/**")
-                .antMatchers("/v3/api-docs/**", "/swagger-ui/**",
-                        "/configuration/security", "/swagger-ui.html", "/webjars/**", "/resources/**", "/template/**", "/css/**", "/img/**", "/js/**")
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/example/**",
+                        "/configuration/security", "/swagger-ui.html", "/webjars/**", "/static/**", "/resources/**", "/template/**", "/css/**", "/img/**", "/js/**")
                 .antMatchers(HttpMethod.OPTIONS);
     }
 
