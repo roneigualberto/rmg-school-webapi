@@ -39,5 +39,8 @@ public class Lecture {
     @Column(name = "lecture_order", nullable = false)
     private Integer order;
 
+    @Column
+    private String path;
+
 
 }

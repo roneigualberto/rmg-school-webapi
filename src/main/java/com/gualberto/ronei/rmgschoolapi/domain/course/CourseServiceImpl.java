@@ -10,13 +10,16 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageService;
 import com.gualberto.ronei.rmgschoolapi.domain.user.LoggedUserContext;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import com.gualberto.ronei.rmgschoolapi.domain.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +34,9 @@ public class CourseServiceImpl implements CourseService {
 
     private final LectureRepository lectureRepository;
 
-    private LoggedUserContext loggedUserContext;
+    private final LoggedUserContext loggedUserContext;
+
+    private final StorageService storageService;
 
 
     @Override
@@ -90,11 +95,11 @@ public class CourseServiceImpl implements CourseService {
 
         Long sectionId = lectureForm.getSectionId();
 
-        User instrutor = loggedUserContext.getLoggedUser();
+        User instructor = loggedUserContext.getLoggedUser();
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
         Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new DomainException("Section not found"));
 
-        if (!course.getInstructor().equals(instrutor)) {
+        if (!course.getInstructor().equals(instructor)) {
             throw new DomainException("Instructor does not have this course");
         }
 
@@ -120,4 +125,37 @@ public class CourseServiceImpl implements CourseService {
 
         return lecture;
     }
+
+    @Override
+    public void storeLectureContent(Long courseId, Long lectureId, InputStream inputStream) {
+
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new DomainException("Lecture not found"));
+        String path = "courses/" + course.getId() + "/lectures/lecture-" + UUID.randomUUID() + "." + lecture.getType().getExtension();
+
+        User instructor = loggedUserContext.getLoggedUser();
+
+        if (!course.getInstructor().equals(instructor)) {
+            throw new DomainException("Instructor does not have this course");
+        }
+
+        lecture.setPath(path);
+        lectureRepository.save(lecture);
+        storageService.store(path, inputStream);
+
+    }
+
+    @Override
+    public InputStream getLectureContent(Long courseId, Long lectureId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new DomainException("Lecture not found"));
+
+        if (!lecture.getCourse().equals(course)) {
+            throw new DomainException("Course does not have this section");
+        }
+
+        return storageService.get(lecture.getPath());
+    }
+
+
 }

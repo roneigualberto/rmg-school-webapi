@@ -15,14 +15,12 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -108,6 +106,28 @@ public class CourseController {
         EntityModel<LectureResponse> entityModel = EntityModel.of(response, selfLink);
 
         return ResponseEntity.created(location).body(entityModel);
+    }
+
+
+    @Transactional
+    @PostMapping("{courseId}/lectures/{lectureId}/content")
+    public ResponseEntity<?> storeContent(@PathVariable Long courseId, @PathVariable Long lectureId, @RequestParam("content") MultipartFile content) throws IOException {
+
+        courseService.storeLectureContent(courseId, lectureId, content.getInputStream());
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @Transactional(readOnly = true)
+    @GetMapping("{courseId}/lectures/{lectureId}/content")
+    public ResponseEntity<?> getContent(@PathVariable Long courseId, @PathVariable Long lectureId) {
+
+        InputStream content = courseService.getLectureContent(courseId, lectureId);
+
+        return ResponseEntity.ok().body(content);
     }
 
 

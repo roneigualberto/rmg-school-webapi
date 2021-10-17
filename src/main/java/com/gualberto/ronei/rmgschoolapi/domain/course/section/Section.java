@@ -23,6 +23,7 @@ public class Section {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @ToString.Exclude
     private Course course;
 
     @Column(nullable = false)

@@ -43,6 +43,7 @@ public final class CourseTestConstants {
                 .build();
 
         SECTION_1 = Section.builder()
+                .id(SECTION_1_ID)
                 .name(SECTION_1_NAME)
                 .order(SECTION_1_ORDER)
                 .build();

@@ -7,6 +7,8 @@ import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategoryRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseRepository;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureType;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
@@ -16,20 +18,26 @@ import com.gualberto.ronei.rmgschoolapi.infra.tests.BaseIntegrationTest;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.CategoryTestContants;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants;
 import com.gualberto.ronei.rmgschoolapi.infra.tests.UserTestConstants;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static com.gualberto.ronei.rmgschoolapi.domain.course.SkillLevelEnum.BEGINNER;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.*;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.UserTestConstants.USER_EMAIL;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +58,9 @@ class CourseControllerTest extends BaseIntegrationTest {
     private SectionRepository sectionRepository;
 
     @Autowired
+    private LectureRepository lectureRepository;
+
+    @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
@@ -67,17 +78,28 @@ class CourseControllerTest extends BaseIntegrationTest {
     private Course courseTest;
     private SectionRequest sectionRequest;
     private LectureRequest lectureRequest;
+    private Lecture lecture1Test;
+    private Long courseId;
 
 
     @AfterEach
     void tearDown() {
 
-        if (courseTest != null) {
-            courseRepository.delete(courseTest);
+        if (lecture1Test != null) {
+            lectureRepository.delete(lecture1Test);
         }
 
         if (section1Test != null) {
             sectionRepository.delete(section1Test);
+        }
+
+        if (courseTest != null) {
+            courseTest.getSections().remove(section1Test);
+            courseRepository.delete(courseTest);
+        }
+
+        if (courseId != null) {
+            courseRepository.deleteById(courseId);
         }
 
         if (subCategoryTest != null) {
@@ -93,7 +115,6 @@ class CourseControllerTest extends BaseIntegrationTest {
         }
     }
 
-
     @Test
     @Transactional
     @WithMockUser(username = USER_EMAIL)
@@ -103,11 +124,13 @@ class CourseControllerTest extends BaseIntegrationTest {
         givenSubCategory();
         givenCourseRequest();
 
+        String id = "$.id";
+
         mockMvc.perform(post(BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(courseRequestTest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath(id).isNotEmpty())
                 .andExpect(jsonPath("$.name").value(courseRequestTest.getName()))
                 .andExpect(jsonPath("$.title").value(courseRequestTest.getTitle()))
                 .andExpect(jsonPath("$.about").value(courseRequestTest.getAbout()))
@@ -120,7 +143,14 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.instructor.firstName").value(userTest.getFirstName()))
                 .andExpect(jsonPath("$.instructor.lastName").value(userTest.getLastName()))
                 .andExpect(jsonPath("$.instructor.email").value(userTest.getEmail()))
-                .andExpect(jsonPath("$._links").isMap());
+                .andExpect(jsonPath("$._links").isMap())
+                .andDo((result) -> {
+                    var contentMap = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+                    courseId = Long.parseLong(contentMap.get("id").toString());
+
+                });
+
+
     }
 
     @Test
@@ -197,6 +227,25 @@ class CourseControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$._embedded.courses[0].sections").isNotEmpty());
     }
 
+    @Test
+    @WithMockUser(username = USER_EMAIL)
+    void shouldUploadLectureContent() throws Exception {
+        givenUser();
+        givenCategory();
+        givenSubCategory();
+        givenCourse();
+        givenSection1();
+        givenLecture1();
+
+        String url = BASE_URI + "/{courseId}/lectures/{lectureId}/content";
+
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("content", "some-text.txt", "text/plain", "test data".getBytes(StandardCharsets.UTF_8));
+
+        mockMvc.perform(multipart(url, courseTest.getId(), lecture1Test.getId())
+                .file(mockMultipartFile)
+        ).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
+    }
+
 
     private void givenCourseRequest() {
         courseRequestTest = CourseRequest.builder()
@@ -241,6 +290,14 @@ class CourseControllerTest extends BaseIntegrationTest {
         section1Test.setCourse(courseTest);
         section1Test = sectionRepository.save(section1Test);
         courseTest.addSection(section1Test);
+
+    }
+
+    private void givenLecture1() {
+        lecture1Test = LECTURE_1;
+        lecture1Test.setCourse(courseTest);
+        lecture1Test.setSection(section1Test);
+        lecture1Test = lectureRepository.save(lecture1Test);
 
     }
 
