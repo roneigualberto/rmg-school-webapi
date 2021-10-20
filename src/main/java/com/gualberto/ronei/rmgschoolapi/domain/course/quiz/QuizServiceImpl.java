@@ -1,5 +1,6 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course.quiz;
 
+import com.gualberto.ronei.rmgschoolapi.application.rest.controller.quiz.QuizResponse;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
@@ -37,18 +38,27 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public Question createQuestion(Long quizId, QuestionForm questionForm) {
 
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new DomainException("Quiz not found"));
+        try  {
+            Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new DomainException("Quiz not found"));
 
-        Question question = Question.builder().quiz(quiz)
-                .statement(questionForm.getStatement())
-                .order(questionForm.getOrder())
-                .build();
+            Question question = Question.builder().quiz(quiz)
+                    .statement(questionForm.getStatement())
+                    .order(questionForm.getOrder())
+                    .build();
 
-        questionForm.getAlternatives().forEach(question::addAlternative);
+            questionForm.getAlternatives().forEach(question::addAlternative);
 
-        questionRepository.save(question);
+            questionRepository.save(question);
 
-        return question;
+            return question;
+        } catch(RuntimeException ex) {
+            ex.printStackTrace();
+
+            throw ex;
+
+        }
+
+
     }
 
     @Override

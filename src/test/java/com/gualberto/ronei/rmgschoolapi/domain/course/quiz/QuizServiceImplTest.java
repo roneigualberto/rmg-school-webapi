@@ -1,6 +1,7 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course.quiz;
 
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
+import com.gualberto.ronei.rmgschoolapi.infra.tests.QuizTestConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.SECTION_1;
 import static com.gualberto.ronei.rmgschoolapi.infra.tests.CourseTestConstants.SECTION_1_ID;
+import static com.gualberto.ronei.rmgschoolapi.infra.tests.QuizTestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -66,6 +68,16 @@ class QuizServiceImplTest {
         thenShouldCreateQuestion();
     }
 
+    @Test
+    void updateQuestion_shouldUpdateQuestion() {
+        givenQuestionFormForUpdate();
+        givenQuiz();
+        whenCalling_QuizRepository_findById();
+        whenCalling_QuestionRepository_findById();
+        whenCalledUpdateQuestion();
+        thenShouldUpdateQuestion();
+    }
+
     private void thenShouldCreateQuiz() {
         assertThat(quizResult.getTitle()).isEqualTo(quizForm.getTitle());
         assertThat(quizResult.getDescription()).isEqualTo(quizForm.getDescription());
@@ -76,39 +88,88 @@ class QuizServiceImplTest {
     private void thenShouldCreateQuestion() {
         assertThat(questionResult.getStatement()).isEqualTo(questionForm.getStatement());
         assertThat(questionResult.getOrder()).isEqualTo(questionForm.getOrder());
+        assertThat(questionResult.getAlternatives().size()).isEqualTo(3);
+        verify(questionRepository, times(1)).save(any());
+    }
+
+    private void thenShouldUpdateQuestion() {
+        assertThat(questionResult.getStatement()).isEqualTo(questionForm.getStatement());
+        assertThat(questionResult.getOrder()).isEqualTo(questionForm.getOrder());
+        assertThat(questionResult.getAlternatives().size()).isEqualTo(2);
         verify(questionRepository, times(1)).save(any());
     }
 
     private void givenQuizForm() {
         quizForm = QuizForm.builder()
-                .title("Quiz Title")
-                .description("Quiz Description")
-                .percentageApproval(70.0)
+                .title(QUIZ_TITLE)
+                .description(QUIZ_DESCRIPTION)
+                .percentageApproval(QUIZ_PERCENTAGE_APPROVAL)
                 .build();
     }
 
     private void givenQuiz() {
-        quizTest = Quiz.builder()
-                .id(1L)
-                .title("Quiz Title")
-                .description("Quiz Description")
-                .percentageApproval(70.0)
-                .build();
+        quizTest = QUIZ;
     }
 
     private void givenQuestionForm() {
         questionForm = QuestionForm.builder()
-                .order(1)
-                .statement("Question 01")
+                .order(QUESTION_1_ORDER)
+                .statement(QUESTION_1_STATEMENT)
                 .build();
+
+        AlternativeForm alt1 = AlternativeForm.builder().order(QUESTION_1_ALT_1_ORDER)
+                .statement(QUESTION_1_ALT_1_STATEMENT)
+                .build();
+
+        questionForm.getAlternatives().add(alt1);
+
+        AlternativeForm alt2 = AlternativeForm.builder().order(QUESTION_1_ALT_2_ORDER)
+                .statement(QUESTION_1_ALT_2_STATEMENT)
+                .build();
+
+        questionForm.getAlternatives().add(alt2);
+
+        AlternativeForm alt3 = AlternativeForm.builder().order(QUESTION_1_ALT_3_ORDER)
+                .statement(QUESTION_1_ALT_3_STATEMENT)
+                .build();
+
+        questionForm.getAlternatives().add(alt3);
+
     }
+
+    private void givenQuestionFormForUpdate() {
+        questionForm = QuestionForm.builder()
+                .order(QUESTION_1_ORDER)
+                .statement(QUESTION_1_STATEMENT)
+                .build();
+
+        AlternativeForm alt1 = AlternativeForm.builder()
+                .id(QUESTION_1_ALT_1_ID)
+                .order(QUESTION_1_ALT_1_ORDER)
+                .statement(QUESTION_1_ALT_1_STATEMENT)
+                .build();
+
+        questionForm.getAlternatives().add(alt1);
+
+        AlternativeForm alt2 = AlternativeForm.builder().order(QUESTION_1_ALT_2_ORDER)
+                .statement(QUESTION_1_ALT_2_STATEMENT)
+                .build();
+
+        questionForm.getAlternatives().add(alt2);
+
+    }
+
 
     private void whenCalledCreate() {
         quizResult = quizService.create(SECTION_1_ID, quizForm);
     }
 
     private void whenCalledCreateQuestion() {
-        questionResult = quizService.createQuestion(1L, questionForm);
+        questionResult = quizService.createQuestion(QUIZ_ID, questionForm);
+    }
+
+    private void whenCalledUpdateQuestion() {
+        questionResult = quizService.updateQuestion(QUIZ_ID, QUESTION_1_ID, questionForm);
     }
 
     private void whenCalling_SectionRepository_findById() {
@@ -116,6 +177,10 @@ class QuizServiceImplTest {
     }
 
     private void whenCalling_QuizRepository_findById() {
-        when(quizRepository.findById(1L)).thenReturn(Optional.of(quizTest));
+        when(quizRepository.findById(QUIZ_ID)).thenReturn(Optional.of(quizTest));
+    }
+
+    private void whenCalling_QuestionRepository_findById() {
+        when(questionRepository.findById(QUESTION_1_ID)).thenReturn(Optional.of(QUESTION_1));
     }
 }

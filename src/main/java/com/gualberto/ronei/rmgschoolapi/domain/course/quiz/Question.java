@@ -36,12 +36,11 @@ public class Question {
     private Integer order;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
     @ToString.Exclude
     private Alternative correct;
 
     @Builder.Default
-    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Alternative> alternatives = new ArrayList<>();
 
@@ -50,6 +49,7 @@ public class Question {
 
         Alternative alternative = Alternative.builder()
                 .question(this)
+                .order(form.getOrder())
                 .statement(form.getStatement())
                 .build();
 
