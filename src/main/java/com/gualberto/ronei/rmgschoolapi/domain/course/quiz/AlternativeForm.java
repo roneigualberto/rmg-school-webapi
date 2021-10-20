@@ -13,7 +13,11 @@ import lombok.NoArgsConstructor;
 public class AlternativeForm {
 
 
+    private Long id;
+
     private String statement;
+
+    private Integer order;
 
     private boolean correct;
 }

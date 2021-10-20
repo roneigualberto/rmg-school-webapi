@@ -1,17 +1,23 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course.quiz;
 
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"quiz_id", "question_order"},
+        name = "question_order_un"))
 public class Question {
 
     @Id
@@ -25,6 +31,9 @@ public class Question {
 
     @Column(nullable = false, length = 5000)
     private String statement;
+
+    @Column(name = "question_order", nullable = false)
+    private Integer order;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -45,6 +54,37 @@ public class Question {
                 .build();
 
         this.alternatives.add(alternative);
+
+        if (form.isCorrect()) {
+            setCorrect(alternative);
+        }
+    }
+
+    public void updateAlternatives(List<AlternativeForm> alternativeForms) {
+
+        Map<Long, Alternative> alternativeToRemove = alternatives
+                .stream()
+                .collect(Collectors.toMap(Alternative::getId, Function.identity()));
+
+        for (AlternativeForm alternativeForm : alternativeForms) {
+            if (alternativeForm.getId() == null) {
+                addAlternative(alternativeForm);
+            } else {
+                alternativeToRemove.remove(alternativeForm.getId());
+                updateAlternative(alternativeForm);
+            }
+        }
+
+        alternatives.removeAll(alternativeToRemove.values());
+    }
+
+    public void updateAlternative(AlternativeForm form) {
+
+        Alternative alternative = this.alternatives.stream()
+                .filter((alt) -> alt.getId().equals(form.getId()))
+                .findAny().orElseThrow(() -> new DomainException("Alternative not found"));
+
+        alternative.setStatement(form.getStatement());
 
         if (form.isCorrect()) {
             setCorrect(alternative);

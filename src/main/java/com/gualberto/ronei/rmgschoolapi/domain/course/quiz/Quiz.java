@@ -28,6 +28,9 @@ public class Quiz {
     @ToString.Exclude
     private Section section;
 
+    @Column
+    private String description;
+
     @Column(nullable = false)
     private Double percentageApproval;
 

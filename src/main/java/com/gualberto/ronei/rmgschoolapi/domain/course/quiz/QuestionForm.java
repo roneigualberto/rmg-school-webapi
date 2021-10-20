@@ -17,6 +17,8 @@ public class QuestionForm {
 
     private String statement;
 
+    private Integer order;
+
     @Builder.Default
     private List<AlternativeForm> alternatives = new ArrayList<>();
 }

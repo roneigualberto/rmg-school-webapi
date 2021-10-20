@@ -10,6 +10,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"question_id", "alternative_order"},
+        name = "alternative_order_un"))
 public class Alternative {
 
     @Id
@@ -23,4 +25,7 @@ public class Alternative {
 
     @Column(nullable = false, length = 5000)
     private String statement;
+
+    @Column(name = "alternative_order", nullable = false)
+    private Integer order;
 }

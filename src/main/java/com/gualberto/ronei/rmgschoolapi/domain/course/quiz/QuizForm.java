@@ -16,9 +16,9 @@ public class QuizForm {
 
     private String title;
 
+    private String description;
+
     private Double percentageApproval;
 
-    @Builder.Default
-    private List<QuestionForm> questions = new ArrayList<>();
 
 }
