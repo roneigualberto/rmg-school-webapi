@@ -7,4 +7,6 @@ public interface QuizService {
     Question createQuestion(Long quizId, QuestionForm questionForm);
 
     Question updateQuestion(Long quizId, Long questionId, QuestionForm questionForm);
+
+    Quiz findBySectionId(Long sectionId);
 }

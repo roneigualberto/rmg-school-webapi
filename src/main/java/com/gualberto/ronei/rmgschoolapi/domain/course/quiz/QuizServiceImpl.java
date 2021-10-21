@@ -1,6 +1,5 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course.quiz;
 
-import com.gualberto.ronei.rmgschoolapi.application.rest.controller.quiz.QuizResponse;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
@@ -38,7 +37,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public Question createQuestion(Long quizId, QuestionForm questionForm) {
 
-        try  {
+        try {
             Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new DomainException("Quiz not found"));
 
             Question question = Question.builder().quiz(quiz)
@@ -51,7 +50,7 @@ public class QuizServiceImpl implements QuizService {
             questionRepository.save(question);
 
             return question;
-        } catch(RuntimeException ex) {
+        } catch (RuntimeException ex) {
             ex.printStackTrace();
 
             throw ex;
@@ -62,10 +61,10 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public Question updateQuestion(Long quizId,Long questionId,QuestionForm questionForm) {
+    public Question updateQuestion(Long quizId, Long questionId, QuestionForm questionForm) {
 
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new DomainException("Quiz not found"));
-        Question question =  questionRepository.findById(questionId).orElseThrow(() -> new DomainException("Question not found"));
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new DomainException("Question not found"));
 
         question.setQuiz(quiz);
         question.setStatement(questionForm.getStatement());
@@ -75,5 +74,10 @@ public class QuizServiceImpl implements QuizService {
         questionRepository.save(question);
 
         return question;
+    }
+
+    @Override
+    public Quiz findBySectionId(Long sectionId) {
+        return quizRepository.findBySectionId(sectionId).orElseThrow(() -> new DomainException("Quiz not found"));
     }
 }
