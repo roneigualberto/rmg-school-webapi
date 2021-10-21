@@ -12,6 +12,7 @@ import java.util.List;
 public interface CourseService {
 
 
+    Course get(Long courseId);
     Course createCourse(CourseForm courseForm);
 
     List<Course> getMyCourses();

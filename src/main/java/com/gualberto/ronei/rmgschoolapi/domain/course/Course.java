@@ -3,9 +3,16 @@ package com.gualberto.ronei.rmgschoolapi.domain.course;
 import com.gualberto.ronei.rmgschoolapi.domain.category.Category;
 import com.gualberto.ronei.rmgschoolapi.domain.category.SubCategory;
 import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
+import com.gualberto.ronei.rmgschoolapi.domain.course.tag.TagForm;
+import com.gualberto.ronei.rmgschoolapi.domain.tag.Tag;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,10 +21,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -70,6 +79,12 @@ public class Course {
     private List<Section> sections = new ArrayList<>();
 
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @Builder.Default
+    @ToString.Exclude
+    private List<Tag> tags = new ArrayList<>();
+
+
     public Section createSection(String name, Integer order) {
 
         Section section = Section.builder()
@@ -90,5 +105,12 @@ public class Course {
 
     public boolean hasSection(Section section) {
         return this.sections.contains(section);
+    }
+
+
+    public void addTags(List<TagForm> tagForms) {
+        tags.addAll(tagForms.stream()
+                .map((form) -> Tag.builder().id(form.getId()).name(form.getName()).build())
+                .collect(Collectors.toList()));
     }
 }

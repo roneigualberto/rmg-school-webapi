@@ -103,6 +103,14 @@
             <version>${org.mapstruct.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.7.0</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

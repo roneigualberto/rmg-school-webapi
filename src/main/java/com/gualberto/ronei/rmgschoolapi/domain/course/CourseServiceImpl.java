@@ -13,12 +13,10 @@ import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageService;
 import com.gualberto.ronei.rmgschoolapi.domain.user.LoggedUserContext;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
-import com.gualberto.ronei.rmgschoolapi.domain.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +37,10 @@ public class CourseServiceImpl implements CourseService {
 
     private final StorageService storageService;
 
+    @Override
+    public Course get(Long courseId) {
+        return courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
+    }
 
     @Override
     public Course createCourse(CourseForm courseForm) {
@@ -58,6 +60,8 @@ public class CourseServiceImpl implements CourseService {
                 .price(courseForm.getPrice())
                 .build();
 
+        course.addTags(courseForm.getTags());
+
         courseRepository.save(course);
 
         return course;
@@ -72,7 +76,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Section addSection(Long courseId, SectionForm sectionForm) {
         User instrutor = loggedUserContext.getLoggedUser();
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
+        Course course = get(courseId);
 
         if (!course.getInstructor().equals(instrutor)) {
             throw new DomainException("Instructor does not have this course");
@@ -97,7 +101,7 @@ public class CourseServiceImpl implements CourseService {
         Long sectionId = lectureForm.getSectionId();
 
         User instructor = loggedUserContext.getLoggedUser();
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new DomainException("Course not found"));
+        Course course = get(courseId);
         Section section = sectionRepository.findById(sectionId).orElseThrow(() -> new DomainException("Section not found"));
 
         if (!course.getInstructor().equals(instructor)) {

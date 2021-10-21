@@ -1,10 +1,14 @@
 package com.gualberto.ronei.rmgschoolapi.domain.course;
 
 
+import com.gualberto.ronei.rmgschoolapi.domain.course.tag.TagForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +29,8 @@ public class CourseForm {
     private SkillLevelEnum skillLevel;
 
     private Double price;
+
+    @Builder.Default
+    private List<TagForm> tags = new ArrayList<>();
+
 }
