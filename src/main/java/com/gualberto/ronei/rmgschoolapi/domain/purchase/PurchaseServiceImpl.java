@@ -6,6 +6,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.CourseRepository;
 import com.gualberto.ronei.rmgschoolapi.domain.user.LoggedUserContext;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final CourseRepository courseRepository;
 
     private final PaymentMethodRepository paymentMethodRepository;
+
+    private final ApplicationEventPublisher publisher;
 
 
     @Override
@@ -64,6 +67,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                     .build();
             paymentMethodRepository.save(paymentMethod);
         }
+
+        publisher.publishEvent(new PurchaseCreatedEvent(purchase));
 
 
         return purchase;
