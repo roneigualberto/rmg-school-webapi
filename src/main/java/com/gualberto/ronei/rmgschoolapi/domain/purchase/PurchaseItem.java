@@ -21,6 +21,11 @@ public class PurchaseItem {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
+    private Purchase purchase;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private Course course;
 
     @Column

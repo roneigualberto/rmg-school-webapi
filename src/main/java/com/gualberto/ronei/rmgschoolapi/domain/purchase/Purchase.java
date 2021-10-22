@@ -38,6 +38,7 @@ public class Purchase {
     @Embedded
     private Payment payment;
 
+    @OneToMany(mappedBy = "purchase")
     private List<PurchaseItem> items = new ArrayList<>();
 
 
@@ -45,6 +46,7 @@ public class Purchase {
 
         items = courses.stream().map((course) ->
                 PurchaseItem.builder()
+                        .purchase(this)
                         .course(course)
                         .price(course.getPrice())
                         .build()
