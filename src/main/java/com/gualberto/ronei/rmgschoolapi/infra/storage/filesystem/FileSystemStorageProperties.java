@@ -1,4 +1,4 @@
-package com.gualberto.ronei.rmgschoolapi.infra.storage;
+package com.gualberto.ronei.rmgschoolapi.infra.storage.filesystem;
 
 import lombok.Getter;
 import lombok.Setter;

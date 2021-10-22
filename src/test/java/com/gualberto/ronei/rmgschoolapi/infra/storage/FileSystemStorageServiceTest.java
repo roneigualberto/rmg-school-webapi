@@ -1,5 +1,7 @@
 package com.gualberto.ronei.rmgschoolapi.infra.storage;
 
+import com.gualberto.ronei.rmgschoolapi.infra.storage.filesystem.FileSystemStorageProperties;
+import com.gualberto.ronei.rmgschoolapi.infra.storage.filesystem.FileSystemStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

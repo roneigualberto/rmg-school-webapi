@@ -42,10 +42,15 @@ public class SchopCartController {
 
         User loggedUser = loggedUserContext.getLoggedUser();
 
-        Optional<ShopCart> shopCart = shopCartService.get(loggedUser.getId());
+        Optional<ShopCart> optShopCart = shopCartService.get(loggedUser.getId());
 
+        ShopCart shopCart = null;
+        if (optShopCart.isPresent()) {
+            shopCart = optShopCart.get();
+        }
 
-        ShopCartResponse response = shopCartMapper.fromShopCart(shopCart.get());
+        
+        ShopCartResponse response = shopCartMapper.fromShopCart(shopCart);
 
         return ResponseEntity.ok(response);
     }
@@ -59,9 +64,7 @@ public class SchopCartController {
 
         ShopCartItem shopCartItem = shopCartService.addItem(loggedUser.getId(), courseId);
 
-
         ShopCartItemResponse response = shopCartMapper.fromShopCartItem(shopCartItem);
-
 
         return ResponseEntity.ok(response);
     }

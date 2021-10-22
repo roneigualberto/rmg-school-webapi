@@ -1,31 +1,29 @@
 package com.gualberto.ronei.rmgschoolapi.infra.cache;
 
 import com.gualberto.ronei.rmgschoolapi.domain.shared.cache.CacheService;
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
 
-@Service
-@AllArgsConstructor
-@Primary
-public class RedisCacheService implements CacheService {
+import java.util.HashMap;
+import java.util.Map;
 
-    private final Jedis jedis;
+@Service()
+public class InMemoryCacheService implements CacheService {
 
+    private static final Map<String, String> caches = new HashMap<>();
 
     @Override
     public String get(String key) {
-        return jedis.get(key);
+        return caches.get(key);
     }
 
     @Override
     public void put(String key, String value) {
-        jedis.set(key, value);
+        caches.put(key, value);
     }
 
     @Override
     public void delete(String key) {
-        jedis.del(key);
+        caches.remove(key);
     }
 }

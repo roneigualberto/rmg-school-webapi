@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis;
 public class JedisClientConfig {
 
     @Bean
-    public Jedis jedis(RedisConfig redisConfig) {
+    public Jedis jedis(RedisConfigProperties redisConfig) {
         return new Jedis(redisConfig.getHost(), redisConfig.getPort());
     }
 }
