@@ -3,6 +3,7 @@ package com.gualberto.ronei.rmgschoolapi.infra.storage.filesystem;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageException;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.storage.StorageService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @AllArgsConstructor
+@Primary
 public class FileSystemStorageService implements StorageService {
 
     private final FileSystemStorageProperties storageProp;

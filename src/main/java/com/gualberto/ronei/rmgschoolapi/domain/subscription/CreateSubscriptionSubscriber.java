@@ -6,7 +6,9 @@ import com.gualberto.ronei.rmgschoolapi.domain.purchase.PurchaseCreatedEvent;
 import com.gualberto.ronei.rmgschoolapi.domain.purchase.PurchaseCreatedSubscriber;
 import com.gualberto.ronei.rmgschoolapi.domain.purchase.PurchaseItem;
 import lombok.AllArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ public class CreateSubscriptionSubscriber implements PurchaseCreatedSubscriber {
     private final SubscriptionService subscriptionService;
 
     @Override
+    @EventListener
     public void handler(PurchaseCreatedEvent event) {
 
         Purchase purchase = event.getPurchase();
