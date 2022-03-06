@@ -5,6 +5,7 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.CourseService;
 import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.user.LoggedUserContext;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
 
-
     private final CourseService courseService;
 
     private final CompletedLectureRepository completedLectureRepository;
+
+    private final LoggedUserContext loggedUserContext;
+
 
     @Transactional
     @Override
@@ -40,6 +43,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionRepository.saveAll(subscriptions);
 
         return subscriptions;
+    }
+
+    @Override
+    public List<Subscription> getLoggedStudentSubscriptions() {
+        User student = loggedUserContext.getLoggedUser();
+        return subscriptionRepository.findByStudent(student);
     }
 
     @Override
@@ -68,7 +77,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Lecture lecture = courseService.getLectureById(lectureId).orElseThrow(() -> new DomainException("Lecture not found"));
 
         completedLectureRepository.deleteBySubscriptionAndLecture(subscription, lecture);
-
-
     }
+
+
 }

@@ -9,6 +9,9 @@ public interface SubscriptionService {
 
     List<Subscription> create(User student, List<Course> courses);
 
+
+    List<Subscription> getLoggedStudentSubscriptions();
+
     void completeLecture(Long subscriptionId, Long lectureId);
 
     void deleteCompletedLecture(Long subscriptionId, Long lectureId);
