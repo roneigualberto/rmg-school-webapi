@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -160,6 +161,11 @@ public class CourseServiceImpl implements CourseService {
         }
 
         return storageService.get(lecture.getPath());
+    }
+
+    @Override
+    public Optional<Lecture> getLectureById(Long lectureId) {
+        return lectureRepository.findById(lectureId);
     }
 
 

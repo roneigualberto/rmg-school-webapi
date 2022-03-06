@@ -8,11 +8,13 @@ import com.gualberto.ronei.rmgschoolapi.domain.course.section.SectionForm;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 
 public interface CourseService {
 
 
     Course get(Long courseId);
+
     Course createCourse(CourseForm courseForm);
 
     List<Course> getMyCourses();
@@ -24,4 +26,6 @@ public interface CourseService {
     void storeLectureContent(Long courseId, Long lectureId, InputStream content);
 
     InputStream getLectureContent(Long courseId, Long lectureId);
+
+    Optional<Lecture> getLectureById(Long lectureId);
 }

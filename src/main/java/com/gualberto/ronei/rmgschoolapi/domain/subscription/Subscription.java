@@ -2,6 +2,8 @@ package com.gualberto.ronei.rmgschoolapi.domain.subscription;
 
 
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
+import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -43,4 +46,14 @@ public class Subscription {
     private LocalDateTime finishedDate;
 
 
+    public CompletedLecture completedLecture(Lecture lecture) {
+
+        if (!Objects.equals(course, lecture.getCourse())) {
+            throw new DomainException("Lecture has no course");
+        }
+
+        return CompletedLecture.builder().subscription(this)
+                .completedDate(LocalDateTime.now())
+                .lecture(lecture).build();
+    }
 }

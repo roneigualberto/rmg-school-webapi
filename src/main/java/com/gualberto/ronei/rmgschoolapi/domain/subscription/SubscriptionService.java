@@ -8,4 +8,8 @@ import java.util.List;
 public interface SubscriptionService {
 
     List<Subscription> create(User student, List<Course> courses);
+
+    void completeLecture(Long subscriptionId, Long lectureId);
+
+    void deleteCompletedLecture(Long subscriptionId, Long lectureId);
 }
