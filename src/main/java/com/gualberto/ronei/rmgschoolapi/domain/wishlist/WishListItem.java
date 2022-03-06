@@ -1,23 +1,22 @@
-package com.gualberto.ronei.rmgschoolapi.domain.subscription;
-
+package com.gualberto.ronei.rmgschoolapi.domain.wishlist;
 
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
-import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
+import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.LectureType;
+import com.gualberto.ronei.rmgschoolapi.domain.course.section.Section;
+import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CompletedLecture {
+public class WishListItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +24,9 @@ public class CompletedLecture {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Subscription subscription;
+    private Course course;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Lecture lecture;
-
-    @CreationTimestamp
-    @Column(nullable = false)
-    private LocalDateTime completedDate;
-
+    private User student;
 }

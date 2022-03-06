@@ -4,6 +4,9 @@ package com.gualberto.ronei.rmgschoolapi.domain.subscription;
 import com.gualberto.ronei.rmgschoolapi.domain.course.Course;
 import com.gualberto.ronei.rmgschoolapi.domain.course.lecture.Lecture;
 import com.gualberto.ronei.rmgschoolapi.domain.shared.exception.DomainException;
+import com.gualberto.ronei.rmgschoolapi.domain.subscription.completedlecture.CompletedLecture;
+import com.gualberto.ronei.rmgschoolapi.domain.subscription.review.Review;
+import com.gualberto.ronei.rmgschoolapi.domain.subscription.review.ReviewForm;
 import com.gualberto.ronei.rmgschoolapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,5 +58,14 @@ public class Subscription {
         return CompletedLecture.builder().subscription(this)
                 .completedDate(LocalDateTime.now())
                 .lecture(lecture).build();
+    }
+
+    public Review createReview(ReviewForm reviewForm) {
+
+        return Review.builder()
+                .subscription(this)
+                .rating(reviewForm.getRating())
+                .comment(reviewForm.getComment())
+                .build();
     }
 }
